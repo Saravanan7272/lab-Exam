@@ -1,0 +1,37 @@
+1. Lexical Analysis (`lexer.l`)
+2. Syntax Analysis (`parser.l`, `parser.y`)
+3. Intermediate Code Generation (`icg.l`, `icg.y`)
+4. Code Optimization (`optimize.c`)
+5. Code Generation (`codegen.c`)
+
+-------------
+1)lexer=>7 parts
+key,id,num,relop,pun,white space,other wise
+
+------------
+2)parser=>12 parts
+8 grammer rules
+p->sl
+sl->s sl | 
+s->7
+assignment,expr,cond,opt_assign,opt_cond,stml_list
+
+-----------------
+3)icg=>9([no=>type,inc,dec],[num,id,relop])
+
+----------------
+4)optimize=>4
+1)Strength Reduction(x**2=>x*x,x*2=2*x=>x+x)
+2)Constant Folding (both operands are numeric)(t1=5*3)
+3)Algebraic Simplification(a+0=0+a=a,a*1=1*a=a)
+4)Code Motion inside a loop
+
+----------------
+5)codegeneration
+t1=c*d
+t2=b+t1
+a=t2
+
+for(int i=0;i^i<10;i=i+1){
+    x=x+i;
+}

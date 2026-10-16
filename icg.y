@@ -197,7 +197,7 @@ void yyerror(const char *s) {
     printf("Syntax/Parse Error\n");
 }
 
-int main(void) {
+int main() {
     printf("Enter statement (assignment, for, while, if-else):\n");
     printf("--- Three Address Code (TAC) ---\n");
     yyparse();

@@ -4,13 +4,13 @@
 %}
 
 %%
-"for"                       { return FOR; }
-"while"                     { return WHILE; }
 "if"                        { return IF; }
 "else"                      { return ELSE; }
-"<="|">="|"=="|"!="|"<"|">" { strcpy(yylval.str, yytext); return RELOP; }
-[a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.str, yytext); return ID; }
+"for"                       { return FOR; }
+"while"                     { return WHILE; }
 [0-9]+                      { strcpy(yylval.str, yytext); return NUM; }
+[a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.str, yytext); return ID; }
+"<="|">="|"=="|"!="|"<"|">" { strcpy(yylval.str, yytext); return RELOP; }
 [ \t\n]                     ;
 .                           { return yytext[0]; }
 %%

@@ -83,7 +83,7 @@ echo goto L3
 echo L2:
 echo t2 = x + i
 echo x = t2
-echo t1 = i + 1
+echo t1 = i + 1  
 echo i = t1
 echo goto L1
 echo L3:

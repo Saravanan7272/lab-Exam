@@ -24,14 +24,8 @@ int isNum(const char *s) {
     return 1;
 }
 
-void trim(char *s) {
-    int len = strlen(s);
-    while (len > 0 && (s[len - 1] == '\n' || s[len - 1] == '\r' || isspace((unsigned char)s[len - 1]))) {
-        s[--len] = '\0';
-    }
-}
 
-int main(void) {
+int main() {
     int n = 0, i, in_loop = 0;
     char line[64];
 
@@ -43,7 +37,6 @@ int main(void) {
 
     for (i = 0; i < n; i++) {
         if (!fgets(line, sizeof(line), stdin)) break;
-        trim(line);
         if (strlen(line) == 0) { i--; continue; }
 
         strcpy(code[i].raw, line);
