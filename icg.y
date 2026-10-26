@@ -30,7 +30,7 @@ char incr_code[128];
 }
 
 %token <str> IF ELSE FOR WHILE ID NUM RELOP
-%type <str> expr cond
+%type <str> cond expr
 
 %nonassoc IFX
 %nonassoc ELSE
