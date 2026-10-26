@@ -8,11 +8,11 @@
 "else"                      { return ELSE; }
 "for"                       { return FOR; }
 "while"                     { return WHILE; }
-[0-9]+                      { strcpy(yylval.str, yytext); return NUM; }
 [a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.str, yytext); return ID; }
+[0-9]+                      { strcpy(yylval.str, yytext); return NUM; }
 "<="|">="|"=="|"!="|"<"|">" { strcpy(yylval.str, yytext); return RELOP; }
-[ \t\n]                     ;
+[ \t\n]+                     ;
 .                           { return yytext[0]; }
 %%
 
-int yywrap(void) { return 1; }
+int yywrap() { return 1; }

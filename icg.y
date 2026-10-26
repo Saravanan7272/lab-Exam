@@ -29,7 +29,7 @@ char incr_code[128];
     char str[64];
 }
 
-%token <str> ID NUM RELOP FOR WHILE IF ELSE
+%token <str> IF ELSE FOR WHILE ID NUM RELOP
 %type <str> expr cond
 
 %nonassoc IFX
@@ -43,124 +43,16 @@ char incr_code[128];
 program : stmt_list
         ;
 
-stmt_list : stmt_list stmt
+stmt_list : stmt stmt_list
           | stmt
           ;
 
 stmt : ID '=' expr ';' {printf("%s = %s\n", $1, $3);}
+     | if_stmt
      | for_loop
      | while_loop
-     | if_stmt
      ;
-
-for_loop : FOR '(' init ';'
-           {
-               strcpy(l_start, new_label());
-               strcpy(l_body, new_label());
-               strcpy(l_exit, new_label());
-               printf("%s:\n", l_start);
-           }
-           cond ';'
-           {
-               printf("if %s goto %s\n", $6, l_body);
-               printf("goto %s\n", l_exit);
-               printf("%s:\n", l_body);
-           }
-           incr ')' body
-           {
-               if (strlen(incr_code) > 0) {
-                   printf("%s\n", incr_code);
-               }
-               printf("goto %s\n", l_start);
-               printf("%s:\n", l_exit);
-           }
-         ;
-
-while_loop : WHILE '('
-             {
-                 strcpy(l_start, new_label());
-                 strcpy(l_body, new_label());
-                 strcpy(l_exit, new_label());
-                 printf("%s:\n", l_start);
-             }
-             cond ')'
-             {
-                 printf("if %s goto %s\n", $4, l_body);
-                 printf("goto %s\n", l_exit);
-                 printf("%s:\n", l_body);
-             }
-             body
-             {
-                 printf("goto %s\n", l_start);
-                 printf("%s:\n", l_exit);
-             }
-           ;
-
-if_stmt : IF '(' cond ')'{
-              strcpy(l_body, new_label());
-              strcpy(l_exit, new_label());
-              printf("if %s goto %s\n", $3, l_body);
-              printf("goto %s\n", l_exit);
-              printf("%s:\n", l_body);
-          }
-          body else_part
-        ;
-
-else_part : ELSE
-            {
-                strcpy(l_false, l_exit);
-                strcpy(l_exit, new_label());
-                printf("goto %s\n", l_exit);
-                printf("%s:\n", l_false);
-            }
-            body
-            {
-                printf("%s:\n", l_exit);
-            }
-          | /* empty */ %prec IFX
-            {
-                printf("%s:\n", l_exit);
-            }
-          ;
-
-init : ID '=' expr {
-         printf("%s = %s\n", $1, $3);
-     }
-     | /* empty */
-     ;
-
-cond : expr RELOP expr {
-         sprintf($$, "%s %s %s", $1, $2, $3);
-     }
-     | expr {
-         sprintf($$, "%s != 0", $1);
-     }
-     | /* empty */ {
-         strcpy($$, "1");
-     }
-     ;
-
-incr : ID '=' ID '+' NUM {
-         char *t = new_temp();
-         sprintf(incr_code, "%s = %s + %s\n%s = %s", t, $3, $5, $1, t);
-     }
-     | ID '=' ID '+' ID {
-         char *t = new_temp();
-         sprintf(incr_code, "%s = %s + %s\n%s = %s", t, $3, $5, $1, t);
-     }
-     | ID '+' '+' {
-         char *t = new_temp();
-         sprintf(incr_code, "%s = %s + 1\n%s = %s", t, $1, $1, t);
-     }
-     | /* empty */ {
-         incr_code[0] = '\0';
-     }
-     ;
-
-body : '{' stmt_list '}'
-     | stmt
-     ;
-
+     
 expr : expr '+' expr {
          char *t = new_temp();
          printf("%s = %s + %s\n", t, $1, $3);
@@ -191,6 +83,118 @@ expr : expr '+' expr {
          strcpy($$, $1);
      }
      ;
+
+if_stmt : IF '(' cond ')'{
+              strcpy(l_body, new_label());
+              strcpy(l_exit, new_label());
+              printf("if %s goto %s\n", $3, l_body);
+              printf("goto %s\n", l_exit);
+              printf("%s:\n", l_body);
+          }
+          body else_part
+        ;
+
+body : '{' stmt_list '}'
+     | stmt
+     ;
+
+else_part : ELSE
+            {
+                strcpy(l_false, l_exit);
+                strcpy(l_exit, new_label());
+                printf("goto %s\n", l_exit);
+                printf("%s:\n", l_false);
+            }
+            body
+            {
+                printf("%s:\n", l_exit);
+            }
+          | /* empty */ %prec IFX
+            {
+                printf("%s:\n", l_exit);
+            }
+          ;
+
+cond : expr RELOP expr {
+         sprintf($$, "%s %s %s", $1, $2, $3);
+     }
+     | expr {
+         sprintf($$, "%s != 0", $1);
+     }
+     | /* empty */ {
+         strcpy($$, "1");
+     }
+     ;
+
+
+for_loop : FOR '(' init ';'
+           {
+               strcpy(l_start, new_label());
+               strcpy(l_body, new_label());
+               strcpy(l_exit, new_label());
+               printf("%s:\n", l_start);
+           }
+           cond ';'
+           {
+               printf("if %s goto %s\n", $6, l_body);
+               printf("goto %s\n", l_exit);
+               printf("%s:\n", l_body);
+           }
+           incr ')' body
+           {
+               if (strlen(incr_code) > 0) {
+                   printf("%s\n", incr_code);
+               }
+               printf("goto %s\n", l_start);
+               printf("%s:\n", l_exit);
+           }
+         ;
+
+init : ID '=' expr {
+         printf("%s = %s\n", $1, $3);
+     }
+     | /* empty */
+     ;
+
+
+incr : ID '=' ID '+' NUM {
+         char *t = new_temp();
+         sprintf(incr_code, "%s = %s + %s\n%s = %s", t, $3, $5, $1, t);
+     }
+     | ID '=' ID '+' ID {
+         char *t = new_temp();
+         sprintf(incr_code, "%s = %s + %s\n%s = %s", t, $3, $5, $1, t);
+     }
+     | ID '+' '+' {
+         char *t = new_temp();
+         sprintf(incr_code, "%s = %s + 1\n%s = %s", t, $1, $1, t);
+     }
+     | /* empty */ {
+         incr_code[0] = '\0';
+     }
+     ;
+     
+while_loop : WHILE '('
+             {
+                 strcpy(l_start, new_label());
+                 strcpy(l_body, new_label());
+                 strcpy(l_exit, new_label());
+                 printf("%s:\n", l_start);
+             }
+             cond ')'
+             {
+                 printf("if %s goto %s\n", $4, l_body);
+                 printf("goto %s\n", l_exit);
+                 printf("%s:\n", l_body);
+             }
+             body
+             {
+                 printf("goto %s\n", l_start);
+                 printf("%s:\n", l_exit);
+             }
+           ;
+
+
 %%
 
 void yyerror(const char *s) {

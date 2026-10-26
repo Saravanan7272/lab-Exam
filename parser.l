@@ -10,8 +10,8 @@
 "while"                    { return WHILE; }
 "++"                       { return INC; }
 "--"                       { return DEC; }
-[0-9]+                     { return NUM; }
 [a-zA-Z_][a-zA-Z0-9_]*     { return ID; }
+[0-9]+                     { return NUM; }
 "<="|">="|"=="|"!="|"<"|">" { return RELOP; }
 [ \t\n]+                   ;
 .                          { return yytext[0]; }

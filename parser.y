@@ -6,16 +6,17 @@ int yylex(void);
 void yyerror(const char *s);
 %}
 
-%token ID NUM TYPE IF ELSE WHILE FOR RELOP INC DEC
+%token TYPE IF ELSE FOR WHILE INC DEC ID NUM RELOP
 %right '='
 %left '+' '-'
 %left '*' '/'
 
 %%
-program : stmt_list                 { printf("\nStatus: Syntactically Valid!\n"); }
+program : stmt_list{ printf("\nStatus: Syntactically Valid!\n"); }
         ;
 
 stmt_list : stmt stmt_list
+
           | /* empty */
           ;
 
@@ -23,8 +24,8 @@ stmt : TYPE ID ';'
      | assignment ';'
      | IF '(' cond ')' stmt
      | IF '(' cond ')' stmt ELSE stmt
-     | WHILE '(' cond ')' stmt
      | FOR '(' opt_assign ';' opt_cond ';' opt_assign ')' stmt
+     | WHILE '(' cond ')' stmt
      | '{' stmt_list '}'
      ;
 
@@ -32,6 +33,19 @@ assignment : ID '=' expr
            | ID INC
            | ID DEC
            ;
+
+expr : expr '+' expr
+     | expr '-' expr
+     | expr '*' expr
+     | expr '/' expr
+     | '(' expr ')'
+     | ID
+     | NUM
+     ;
+     
+cond : expr RELOP expr
+     | expr
+     ;
 
 opt_assign : assignment
            | TYPE ID '=' expr
@@ -42,18 +56,6 @@ opt_cond : cond
          | /* empty */
          ;
 
-cond : expr RELOP expr
-     | expr
-     ;
-
-expr : expr '+' expr
-     | expr '-' expr
-     | expr '*' expr
-     | expr '/' expr
-     | '(' expr ')'
-     | ID
-     | NUM
-     ;
 %%
 
 void yyerror(const char *s) {

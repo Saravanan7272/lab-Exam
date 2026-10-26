@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdlib.h>
+#include <stdlib.h>  
 
 #define MAX 32
 
@@ -24,19 +24,21 @@ int isNum(const char *s) {
     return 1;
 }
 
+void trim(char *s) {
+    int len = strlen(s);
+    while (len > 0 && (s[len - 1] == '\n' || s[len - 1] == '\r' || isspace((unsigned char)s[len - 1]))) {
+        s[--len] = '\0';
+    }
+}
 
 int main() {
-    int n = 0, i, in_loop = 0;
+    int n = 20, i, in_loop = 0;
     char line[64];
-
-
-    printf("Enter number of lines: ");
-    if (scanf("%d", &n) != 1 || n <= 0) return 0;
-    getchar(); // consume newline
-
-
+  
+   
     for (i = 0; i < n; i++) {
         if (!fgets(line, sizeof(line), stdin)) break;
+        trim(line);
         if (strlen(line) == 0) { i--; continue; }
 
         strcpy(code[i].raw, line);
